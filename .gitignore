@@ -1,17 +1,10 @@
-# Node dependencies
-backend/node_modules
-frontend/node_modules
-
-# Build outputs
-frontend/build
-backend/dist
-
-# Environment files
-*.env
+# Node modules
+node_modules/
+frontend-tracker/node_modules/
+backend-tracker/node_modules/
 
 # Logs
 *.log
 
-# OS files
-.DS_Store
-Thumbs.db
+# Environment files
+.env
