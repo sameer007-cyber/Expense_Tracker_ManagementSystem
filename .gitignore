@@ -6,5 +6,5 @@ backend-tracker/node_modules/
 # Logs
 *.log
 
-# Environment files
+# Env files
 .env
