@@ -1,34 +1,23 @@
-const API_BASE = process.env.REACT_APP_API_BASE || 'http://localhost:4000/api';
+import axios from "axios";
 
-export async function fetchExpenses() {
-  const resp = await fetch(`${API_BASE}/expenses`);
-  return resp.json();
-}
+const API = "http://localhost:4000/api/expenses";
 
-export async function createExpense(payload) {
-  const resp = await fetch(`${API_BASE}/expenses`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!resp.ok) throw await resp.json();
-  return resp.json();
-}
+export const fetchExpenses = async () => {
+  const res = await axios.get(API);
+  return res.data;
+};
 
-export async function updateExpense(id, payload) {
-  const resp = await fetch(`${API_BASE}/expenses/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
-  if (!resp.ok) throw await resp.json();
-  return resp.json();
-}
+export const createExpense = async (expense) => {
+  const res = await axios.post(API, expense);
+  return res.data;
+};
 
-export async function deleteExpense(id) {
-  const resp = await fetch(`${API_BASE}/expenses/${id}`, {
-    method: 'DELETE'
-  });
-  if (resp.status === 204) return true;
-  throw await resp.json();
-}
+export const updateExpense = async (id, expense) => {
+  const res = await axios.put(`${API}/${id}`, expense);
+  return res.data;
+};
+
+export const deleteExpense = async (id) => {
+  await axios.delete(`${API}/${id}`);
+  return true;
+};
