@@ -1,86 +1,43 @@
-import React, { useEffect, useState } from 'react';
-import Navbar from './components/Navbar';
-import ExpenseForm from './components/ExpenseForm';
-import ExpenseList from './components/ExpenseList';
-import * as api from './api';
+import React, { useState } from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import LoginPage from "./pages/LoginPage";
+import SignupPage from "./pages/SignupPage";
+import ExpensesPage from "./pages/ExpensesPage";
 
 export default function App() {
-  const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(null);
-  const [message, setMessage] = useState('');
+  const [token, setToken] = useState(localStorage.getItem("token"));
 
-  useEffect(() => {
-    load();
-  }, []);
+  const handleLogin = (jwt) => {
+    localStorage.setItem("token", jwt);
+    setToken(jwt);
+  };
 
-  async function load() {
-    setLoading(true);
-    try {
-      const data = await api.fetchExpenses();
-      setExpenses(data);
-    } catch (err) {
-      console.error(err);
-      setMessage('Failed to load expenses');
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleCreate(payload) {
-    try {
-      const newExp = await api.createExpense(payload);
-      setExpenses(prev => [newExp, ...prev]);
-      setMessage('Expense added.');
-      setTimeout(()=>setMessage(''), 2000);
-    } catch (err) {
-      setMessage(err?.error || 'Create failed');
-    }
-  }
-
-  async function handleUpdate(payload) {
-    try {
-      const updated = await api.updateExpense(editing.id, payload);
-      setExpenses(prev => prev.map(p => p.id === updated.id ? updated : p));
-      setEditing(null);
-      setMessage('Expense updated.');
-      setTimeout(()=>setMessage(''), 2000);
-    } catch (err) {
-      setMessage(err?.error || 'Update failed');
-    }
-  }
-
-  async function handleDelete(id) {
-    if (!window.confirm('Delete this expense?')) return;
-    try {
-      await api.deleteExpense(id);
-      setExpenses(prev => prev.filter(e => e.id !== id));
-      setMessage('Deleted.');
-      setTimeout(()=>setMessage(''), 1500);
-    } catch (err) {
-      setMessage(err?.error || 'Delete failed');
-    }
-  }
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    setToken(null);
+  };
 
   return (
-    <>
-      <Navbar />
-      <main className="container">
-        <section id="add" className="panel">
-          <ExpenseForm onSubmit={editing ? handleUpdate : handleCreate}
-                       initial={editing}
-                       submitLabel={editing ? 'Update Expense' : 'Add Expense'} />
-          {editing && <button className="link" onClick={() => setEditing(null)}>Cancel edit</button>}
-        </section>
+    <Router>
+      <Navbar token={token} onLogout={handleLogout} />
 
-        <section id="list" className="panel">
-          <h2>Expenses</h2>
-          {message && <div className="info">{message}</div>}
-          {loading ? <div>Loading...</div> : (
-            <ExpenseList expenses={expenses} onEdit={(e) => setEditing(e)} onDelete={handleDelete} />
+      <main className="container">
+        <Routes>
+          {!token ? (
+            <>
+              <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="*" element={<Navigate to="/login" />} />
+            </>
+          ) : (
+            <>
+              <Route path="/expenses" element={<ExpensesPage token={token} />} />
+              <Route path="*" element={<Navigate to="/expenses" />} />
+            </>
           )}
-        </section>
+        </Routes>
       </main>
-    </>
+    </Router>
   );
 }
