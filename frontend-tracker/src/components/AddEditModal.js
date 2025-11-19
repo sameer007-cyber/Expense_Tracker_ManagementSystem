@@ -1,40 +1,67 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from "react";
 
-export default function AddEditModal({ initial, onSave, onClose, defaultType='expense' }) {
-  const [form, setForm] = useState({ title:'', amount:'', date:'', category:'', type: defaultType });
+export default function AddEditModal({ visible, initial = null, onClose, onSave, defaultType = "expense" }) {
+  const [form, setForm] = useState({
+    title: "",
+    amount: "",
+    category: "",
+    date: "",
+    type: defaultType,
+  });
 
   useEffect(() => {
     if (initial) {
       setForm({
-        title: initial.title || '',
-        amount: initial.amount || '',
-        date: initial.date ? new Date(initial.date).toISOString().slice(0,10) : '',
-        category: initial.category || '',
-        type: initial.type || defaultType
+        title: initial.title || "",
+        amount: initial.amount || "",
+        category: initial.category || "",
+        date: initial.date ? new Date(initial.date).toISOString().slice(0,10) : "",
+        type: initial.type || defaultType,
+      });
+    } else {
+      setForm({
+        title: "",
+        amount: "",
+        category: "",
+        date: "",
+        type: defaultType,
       });
     }
   }, [initial, defaultType]);
 
+  if (!visible) return null;
+
   const submit = (e) => {
     e.preventDefault();
-    onSave({ ...form, amount: Number(form.amount), date: new Date(form.date) });
+    onSave({
+      ...form,
+      amount: Number(form.amount),
+      date: form.date,
+    });
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <form onSubmit={submit} className="bg-white p-6 rounded w-96">
-        <h3 className="font-semibold mb-4">{initial ? 'Edit' : 'Add'} Entry</h3>
-        <input value={form.title} onChange={e=>setForm({...form,title:e.target.value})} required placeholder="Title" className="w-full p-2 border rounded mb-2" />
-        <input value={form.amount} onChange={e=>setForm({...form,amount:e.target.value})} required type="number" placeholder="Amount" className="w-full p-2 border rounded mb-2" />
-        <input value={form.date} onChange={e=>setForm({...form,date:e.target.value})} required type="date" className="w-full p-2 border rounded mb-2" />
-        <input value={form.category} onChange={e=>setForm({...form,category:e.target.value})} placeholder="Category" className="w-full p-2 border rounded mb-2" />
-        <select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full p-2 border rounded mb-4">
-          <option value="expense">Expense</option>
-          <option value="income">Income</option>
-        </select>
-        <div className="flex gap-2 justify-end">
-          <button type="button" onClick={onClose} className="px-3 py-1 rounded border">Cancel</button>
-          <button type="submit" className="px-3 py-1 rounded bg-purple-600 text-white">Save</button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+      <form onSubmit={submit} className="bg-white p-6 w-full max-w-md rounded shadow">
+        <div className="flex justify-between items-center mb-4">
+          <h3 className="text-lg font-semibold">{initial ? "Edit" : "Add"} {form.type}</h3>
+          <button type="button" onClick={onClose} className="text-gray-600">Close</button>
+        </div>
+
+        <div className="space-y-3">
+          <input required placeholder="Title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} className="w-full border p-2 rounded" />
+          <input required type="number" placeholder="Amount" value={form.amount} onChange={e=>setForm({...form,amount:e.target.value})} className="w-full border p-2 rounded" />
+          <input required type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})} className="w-full border p-2 rounded" />
+          <input required placeholder="Category" value={form.category} onChange={e=>setForm({...form,category:e.target.value})} className="w-full border p-2 rounded" />
+          <select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full border p-2 rounded">
+            <option value="income">Income</option>
+            <option value="expense">Expense</option>
+          </select>
+
+          <div className="flex justify-end gap-2">
+            <button type="button" onClick={onClose} className="px-3 py-1 border rounded">Cancel</button>
+            <button type="submit" className="px-3 py-1 bg-purple-600 text-white rounded">Save</button>
+          </div>
         </div>
       </form>
     </div>
