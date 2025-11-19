@@ -1,12 +1,14 @@
 const Expense = require("../models/expenseModel");
 
+// GET (with type filter)
 exports.getExpenses = async (req, res) => {
   try {
-    // Optionally support query filters: startDate, endDate, category
-    const { startDate, endDate, category } = req.query;
-    const filter = { user: req.user._id };
+    const { startDate, endDate, category, type } = req.query;
 
+    const filter = { user: req.user._id };
+    if (type) filter.type = type;
     if (category) filter.category = category;
+
     if (startDate || endDate) {
       filter.date = {};
       if (startDate) filter.date.$gte = new Date(startDate);
@@ -14,47 +16,81 @@ exports.getExpenses = async (req, res) => {
     }
 
     const expenses = await Expense.find(filter).sort({ createdAt: -1 });
-    res.status(200).json({ success: true, count: expenses.length, expenses });
+
+    res.json({ success: true, expenses });
   } catch (err) {
-    console.error("Error fetching expenses:", err);
-    res.status(500).json({ success: false, message: "Error fetching expenses" });
+    console.error("getExpenses error:", err);
+    res.status(500).json({ success: false });
   }
 };
 
+// ADD
 exports.addExpense = async (req, res) => {
   try {
-    const { title, amount, category, date } = req.body;
-    if (!title || amount == null || !category || !date)
+    const { title, amount, category, date, type } = req.body;
+
+    if (!title || !amount || !category || !date || !type)
       return res.status(400).json({ message: "All fields are required" });
 
     const expense = await Expense.create({
       title,
       amount,
       category,
-      date: new Date(date),
+      date,
+      type,
       user: req.user._id,
     });
 
-    res.status(201).json({ success: true, message: "Expense added", expense });
+    res.json({ success: true, expense });
   } catch (err) {
-    console.error("Error adding expense:", err);
-    res.status(500).json({ success: false, message: "Error adding expense" });
+    console.error("addExpense error:", err);
+    res.status(500).json({ success: false });
   }
 };
 
+// DELETE
 exports.deleteExpense = async (req, res) => {
   try {
-    const expense = await Expense.findOneAndDelete({
+    const deleted = await Expense.findOneAndDelete({
       _id: req.params.id,
       user: req.user._id,
     });
 
-    if (!expense)
-      return res.status(404).json({ success: false, message: "Expense not found" });
+    if (!deleted) return res.status(404).json({ success: false });
 
-    res.json({ success: true, message: "Expense deleted" });
+    res.json({ success: true });
   } catch (err) {
-    console.error("Error deleting expense:", err);
-    res.status(500).json({ success: false, message: "Error deleting expense" });
+    console.error("delete error:", err);
+    res.status(500).json({ success: false });
+  }
+};
+
+// SUMMARY (Dashboard)
+exports.getSummary = async (req, res) => {
+  try {
+    const uid = req.user._id;
+
+    const incomeAgg = await Expense.aggregate([
+      { $match: { user: uid, type: "income" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    const expenseAgg = await Expense.aggregate([
+      { $match: { user: uid, type: "expense" } },
+      { $group: { _id: null, total: { $sum: "$amount" } } },
+    ]);
+
+    const totalIncome = incomeAgg[0]?.total || 0;
+    const totalExpense = expenseAgg[0]?.total || 0;
+
+    res.json({
+      success: true,
+      totalIncome,
+      totalExpense,
+      remaining: totalIncome - totalExpense,
+    });
+  } catch (err) {
+    console.error("summary error:", err);
+    res.status(500).json({ success: false });
   }
 };
