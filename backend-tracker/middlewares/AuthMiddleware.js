@@ -19,8 +19,8 @@ const protect = async (req, res, next) => {
 
     next();
   } catch (err) {
-    console.error(err);
-    res.status(401).json({ message: "Invalid token" });
+    console.error("Auth middleware error:", err);
+    return res.status(401).json({ message: "Invalid token" });
   }
 };
 
@@ -39,7 +39,7 @@ const userVerification = async (req, res) => {
 
     res.json({ status: true, message: "User verified", user });
   } catch (err) {
-    console.error(err);
+    console.error("User verification error:", err);
     res.status(401).json({ status: false, message: "Invalid token" });
   }
 };
