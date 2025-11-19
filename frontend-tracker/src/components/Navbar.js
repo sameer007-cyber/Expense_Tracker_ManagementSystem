@@ -1,24 +1,33 @@
 import React, { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
+/**
+ * Navbar: shows page title on left and user avatar + name on right.
+ * Drop-in replacement for your existing Navbar.
+ */
 export default function Navbar({ title }) {
   const { user } = useContext(AuthContext);
 
+  const initials = user?.username
+    ? user.username.split(" ").map(s => s.charAt(0)).slice(0,2).join("").toUpperCase()
+    : "U";
+
   return (
     <header className="bg-white p-4 flex justify-between items-center border-b">
-      <h2 className="text-xl font-semibold">{title}</h2>
-
-      {/* Right side user section */}
       <div className="flex items-center gap-3">
-        {/* Avatar */}
-        <div className="w-10 h-10 rounded-full bg-purple-500 text-white flex items-center justify-center text-lg shadow">
-          {user?.username?.charAt(0)?.toUpperCase() || "U"}
-        </div>
+        <h2 className="text-xl font-semibold">{title || "Expense Tracker"}</h2>
+      </div>
 
-        {/* Username */}
-        <span className="font-medium text-gray-700">
-          {user?.username}
-        </span>
+      <div className="flex items-center gap-3">
+        {/* small optional status / search area could go here */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-600 to-indigo-500 text-white flex items-center justify-center text-sm font-semibold shadow">
+            {initials}
+          </div>
+          <div className="text-sm text-gray-700 font-medium">
+            {user?.username || "User"}
+          </div>
+        </div>
       </div>
     </header>
   );

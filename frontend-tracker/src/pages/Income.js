@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import API from "../api/axios";
 import Filters from "../components/Filters";
 import AddEditModal from "../components/AddEditModal";
+
 import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -21,7 +22,6 @@ export default function Income() {
   const [chartData, setChartData] = useState(null);
 
   const [filterVisible, setFilterVisible] = useState(false);
-
   const [modalVisible, setModalVisible] = useState(false);
   const [editing, setEditing] = useState(null);
 
@@ -37,17 +37,22 @@ export default function Income() {
       const data = res.data.expenses || [];
       setItems(data);
 
-      // preserve previous chart structure — build chartData the same way you had
       const labels = data.map((i) =>
         new Date(i.date).toLocaleDateString("en-US", { day: "numeric", month: "short" })
       );
+
       setChartData({
         labels,
         datasets: [
           {
             label: "Income",
             data: data.map((i) => i.amount),
-            backgroundColor: "#8b5cf6",
+            backgroundColor: (ctx) => {
+              const g = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
+              g.addColorStop(0, "#8b5cf6");
+              g.addColorStop(1, "#c4b5fd");
+              return g;
+            },
             borderRadius: 6,
           },
         ],
@@ -91,29 +96,53 @@ export default function Income() {
       <div className="flex-1 p-8">
         <Navbar title="Income" />
 
-        {/* top controls: filter button on top-right corner, Add on right */}
         <div className="flex justify-end gap-3 mt-4">
-          <button onClick={() => setFilterVisible(true)} className="px-3 py-2 border rounded">Filters</button>
-          <button onClick={() => { setModalVisible(true); setEditing(null); }} className="px-3 py-2 bg-purple-600 text-white rounded">+ Add Income</button>
+          <button onClick={() => setFilterVisible(true)} className="px-3 py-2 border rounded hover:bg-gray-50">Filters</button>
+          <button onClick={() => { setModalVisible(true); setEditing(null); }} className="px-3 py-2 bg-purple-600 text-white rounded shadow">+ Add Income</button>
         </div>
 
-        {/* Filters modal */}
-        <Filters type="income" visible={filterVisible} onClose={() => setFilterVisible(false)} onApply={(f) => fetchIncome(f)} />
+        <Filters
+          type="income"
+          visible={filterVisible}
+          onClose={() => setFilterVisible(false)}
+          onApply={(f) => fetchIncome(f)}
+        />
 
-        {/* Chart (kept structure) */}
         {chartData && (
           <div className="bg-white p-6 mt-6 rounded shadow">
-            <h3 className="text-lg font-semibold mb-4">Income Overview</h3>
-            <Bar data={chartData} />
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="text-lg font-semibold">Income Overview</h3>
+            </div>
+            <Bar
+              data={chartData}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { display: false },
+                  tooltip: {
+                    backgroundColor: "#6d28d9",
+                    titleFont: { size: 14 },
+                    bodyFont: { size: 13 },
+                    padding: 10,
+                    displayColors: false,
+                  },
+                },
+                scales: {
+                  y: { beginAtZero: true, grid: { color: "#f3f4f6" } },
+                  x: { grid: { display: false } },
+                },
+                elements: {
+                  bar: { borderRadius: 6 },
+                },
+              }}
+            />
           </div>
         )}
 
-        {/* List below chart */}
         <div className="bg-white p-6 mt-6 rounded shadow">
           <div className="flex justify-between items-center mb-4">
             <h4 className="font-semibold">Income Sources</h4>
             <button className="px-3 py-1 border rounded" onClick={() => {
-              // simple CSV download example
               const csv = [
                 ["Title","Amount","Category","Date"],
                 ...items.map(i => [i.title, i.amount, i.category, new Date(i.date).toLocaleDateString()])
@@ -143,7 +172,13 @@ export default function Income() {
           </ul>
         </div>
 
-        <AddEditModal visible={modalVisible} initial={editing} onClose={() => { setModalVisible(false); setEditing(null); }} onSave={onSave} defaultType="income" />
+        <AddEditModal
+          visible={modalVisible}
+          initial={editing}
+          onClose={() => { setModalVisible(false); setEditing(null); }}
+          onSave={onSave}
+          defaultType="income"
+        />
       </div>
     </div>
   );
