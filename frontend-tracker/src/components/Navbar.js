@@ -1,25 +1,12 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 
-export default function Navbar({ token, onLogout }) {
+export default function Navbar({ title }) {
+  const { user } = useContext(AuthContext);
   return (
-    <nav className="nav">
-      <div className="container">
-        <h1 className="brand">Expense Manager</h1>
-        <div className="nav-links">
-          {token ? (
-            <>
-              <Link to="/expenses">Expenses</Link>
-              <button className="link" onClick={onLogout}>Logout</button>
-            </>
-          ) : (
-            <>
-              <Link to="/login">Login</Link>
-              <Link to="/signup">Signup</Link>
-            </>
-          )}
-        </div>
-      </div>
-    </nav>
+    <header className="bg-white p-4 flex justify-between items-center border-b">
+      <div className="text-lg font-semibold">{title || 'Expense Tracker'}</div>
+      <div className="text-sm text-gray-600">{user ? user.username : 'Guest'}</div>
+    </header>
   );
 }

@@ -1,27 +1,26 @@
-import React from "react";
+import React from 'react';
 
-export default function ExpenseList({ expenses, onEdit, onDelete }) {
-  if (!expenses || expenses.length === 0) return <div className="empty">No expenses yet.</div>;
-
+export default function ExpenseList({ items = [], onEdit, onDelete }) {
   return (
-    <div className="list">
-      {expenses.map((exp) => (
-        <div key={exp._id} className="card">
-          <div className="card-left">
-            <div className="title">{exp.title}</div>
-            <div className="meta">
-              {exp.category} • {new Date(exp.date).toLocaleDateString()}
+    <div className="bg-white p-4 rounded shadow-sm">
+      <h3 className="font-semibold mb-4">Recent Transactions</h3>
+      <ul className="space-y-3">
+        {items.map(it => (
+          <li key={it._id} className="flex justify-between items-center border-b pb-2">
+            <div>
+              <div className="font-medium">{it.title}</div>
+              <div className="text-sm text-gray-500">{new Date(it.date).toLocaleDateString()}</div>
             </div>
-          </div>
-          <div className="card-right">
-            <div className="amount">₹{Number(exp.amount).toFixed(2)}</div>
-            <div className="actions">
-              <button className="small" onClick={() => onEdit(exp)}>Edit</button>
-              <button className="small danger" onClick={() => onDelete(exp._id)}>Delete</button>
+            <div className="flex items-center gap-3">
+              <div className={`px-3 py-1 rounded ${it.type === 'income' ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-600'}`}>
+                {it.type === 'income' ? `+ ₹${it.amount}` : `- ₹${it.amount}`}
+              </div>
+              <button onClick={() => onEdit(it)} className="text-sm text-blue-600">Edit</button>
+              <button onClick={() => onDelete(it._id)} className="text-sm text-red-600">Delete</button>
             </div>
-          </div>
-        </div>
-      ))}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
