@@ -94,3 +94,24 @@ exports.getSummary = async (req, res) => {
     res.status(500).json({ success: false });
   }
 };
+
+// UPDATE
+exports.updateExpense = async (req, res) => {
+  try {
+    const { title, amount, category, date, type } = req.body;
+
+    const updated = await Expense.findOneAndUpdate(
+      { _id: req.params.id, user: req.user._id },
+      { title, amount, category, date, type },
+      { new: true }
+    );
+
+    if (!updated)
+      return res.status(404).json({ success: false, message: "Expense not found" });
+
+    res.json({ success: true, expense: updated });
+  } catch (err) {
+    console.error("update error:", err);
+    res.status(500).json({ success: false });
+  }
+};
