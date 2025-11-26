@@ -1,6 +1,5 @@
 const Expense = require("../models/expenseModel");
 
-// GET (with type filter)
 exports.getExpenses = async (req, res) => {
   try {
     const { startDate, endDate, category, type } = req.query;
@@ -24,7 +23,6 @@ exports.getExpenses = async (req, res) => {
   }
 };
 
-// ADD
 exports.addExpense = async (req, res) => {
   try {
     const { title, amount, category, date, type } = req.body;
@@ -48,7 +46,6 @@ exports.addExpense = async (req, res) => {
   }
 };
 
-// DELETE
 exports.deleteExpense = async (req, res) => {
   try {
     const deleted = await Expense.findOneAndDelete({
@@ -65,7 +62,6 @@ exports.deleteExpense = async (req, res) => {
   }
 };
 
-// SUMMARY (Dashboard)
 exports.getSummary = async (req, res) => {
   try {
     const uid = req.user._id;
@@ -95,7 +91,6 @@ exports.getSummary = async (req, res) => {
   }
 };
 
-// UPDATE
 exports.updateExpense = async (req, res) => {
   try {
     const { title, amount, category, date, type } = req.body;

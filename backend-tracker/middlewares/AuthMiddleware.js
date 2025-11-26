@@ -24,6 +24,7 @@ const protect = async (req, res, next) => {
   }
 };
 
+// testing 
 const userVerification = async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -44,4 +45,4 @@ const userVerification = async (req, res) => {
   }
 };
 
-module.exports = { protect, userVerification };
+module.exports = { protect };

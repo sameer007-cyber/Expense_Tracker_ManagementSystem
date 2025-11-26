@@ -23,7 +23,6 @@ exports.Signup = async (req, res) => {
     });
   } catch (err) {
     console.error(err);
-    // handle duplicate key error
     if (err.code === 11000) {
       return res.status(400).json({ message: "User with this email already exists" });
     }
