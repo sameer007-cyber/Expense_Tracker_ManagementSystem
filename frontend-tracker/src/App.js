@@ -13,11 +13,10 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Public */}
+
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* Protected */}
         <Route
           path="/"
           element={
@@ -45,7 +44,6 @@ export default function App() {
           }
         />
 
-        {/* fallback */}
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

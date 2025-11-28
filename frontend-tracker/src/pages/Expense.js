@@ -77,10 +77,8 @@ export default function Expense() {
   const onSave = async (payload) => {
     try {
       if (editing && editing._id) {
-        // PUT request for editing
         await API.put(`/expenses/${editing._id}`, payload);
       } else {
-        // POST request for new expense
         await API.post("/expenses", payload);
       }
 
@@ -126,7 +124,6 @@ export default function Expense() {
           </button>
         </div>
 
-        {/* Filters */}
         <Filters
           type="expense"
           visible={filterVisible}
@@ -134,7 +131,6 @@ export default function Expense() {
           onApply={(f) => fetchExpenses(f)}
         />
 
-        {/* CHART */}
         {chartData && (
           <div className="bg-white p-6 mt-6 rounded shadow">
             <h3 className="text-lg font-semibold mb-3">Expense Overview</h3>
@@ -142,7 +138,6 @@ export default function Expense() {
           </div>
         )}
 
-        {/* LIST */}
         <div className="bg-white p-6 mt-6 rounded shadow">
           <h4 className="font-semibold mb-4">All Expenses</h4>
 

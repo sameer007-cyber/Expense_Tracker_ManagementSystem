@@ -49,11 +49,29 @@ export default function AddEditModal({ visible, initial = null, onClose, onSave,
         </div>
 
         <div className="space-y-3">
-          <input required placeholder="Title" value={form.title} onChange={e=>setForm({...form,title:e.target.value})} className="w-full border p-2 rounded" />
-          <input required type="number" placeholder="Amount" value={form.amount} onChange={e=>setForm({...form,amount:e.target.value})} className="w-full border p-2 rounded" />
-          <input required type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})} className="w-full border p-2 rounded" />
-          <input required placeholder="Category" value={form.category} onChange={e=>setForm({...form,category:e.target.value})} className="w-full border p-2 rounded" />
-          <select value={form.type} onChange={e=>setForm({...form,type:e.target.value})} className="w-full border p-2 rounded">
+          <input required placeholder="Title" 
+          value={form.title} 
+          onChange={e=>setForm({...form,title:e.target.value})} 
+          className="w-full border p-2 rounded" />
+
+          <input required type="number" placeholder="Amount" 
+          value={form.amount} 
+          onChange={e=>setForm({...form,amount:e.target.value})} 
+          className="w-full border p-2 rounded" />
+
+          <input required type="date" 
+          value={form.date} 
+          onChange={e=>setForm({...form,date:e.target.value})} 
+          className="w-full border p-2 rounded" />
+
+          <input required placeholder="Category" 
+          value={form.category} 
+          onChange={e=>setForm({...form,category:e.target.value})} 
+          className="w-full border p-2 rounded" />
+
+          <select value={form.type} 
+          onChange={e=>setForm({...form,type:e.target.value})} 
+          className="w-full border p-2 rounded">
             <option value="income">Income</option>
             <option value="expense">Expense</option>
           </select>

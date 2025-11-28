@@ -13,9 +13,19 @@ export default function Sidebar() {
       </div>
 
       <nav className="flex flex-col gap-2">
-        <NavLink to="/" end className={({isActive}) => isActive ? 'p-2 rounded bg-purple-600 text-white' : 'p-2 rounded hover:bg-gray-100'}>Dashboard</NavLink>
-        <NavLink to="/income" className={({isActive}) => isActive ? 'p-2 rounded bg-purple-600 text-white' : 'p-2 rounded hover:bg-gray-100'}>Income</NavLink>
-        <NavLink to="/expenses" className={({isActive}) => isActive ? 'p-2 rounded bg-purple-600 text-white' : 'p-2 rounded hover:bg-gray-100'}>Expenses</NavLink>
+        <NavLink to="/" end 
+        className={({isActive}) => 
+        isActive ? 'p-2 rounded bg-purple-600 text-white' : 'p-2 rounded hover:bg-gray-100'}>
+          Dashboard
+        </NavLink>
+        <NavLink to="/income" 
+        className={({isActive}) => isActive ? 'p-2 rounded bg-purple-600 text-white' : 'p-2 rounded hover:bg-gray-100'}>
+          Income
+        </NavLink>
+        <NavLink to="/expenses" 
+        className={({isActive}) => isActive ? 'p-2 rounded bg-purple-600 text-white' : 'p-2 rounded hover:bg-gray-100'}>
+          Expenses
+        </NavLink>
         <button onClick={() => { localStorage.removeItem('token'); localStorage.removeItem('user'); window.location.href = '/login'; }} className="mt-4 text-left p-2 rounded hover:bg-gray-100">Logout</button>
       </nav>
     </aside>

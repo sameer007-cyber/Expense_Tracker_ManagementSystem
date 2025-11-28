@@ -22,7 +22,6 @@ export default function Dashboard() {
 
   const [transactions, setTransactions] = useState([]);
 
-  // Fetch summary (Income, Expense, Balance)
   const loadSummary = async () => {
     try {
       const res = await api.get("/expenses/summary");
@@ -32,13 +31,11 @@ export default function Dashboard() {
     }
   };
 
-  // Fetch last 5 transactions (income + expenses)
   const loadTransactions = async () => {
     try {
       const expenseRes = await api.get("/expenses?type=expense");
       const incomeRes = await api.get("/expenses?type=income");
 
-      // Combine and sort by date desc
       const merged = [...expenseRes.data.expenses, ...incomeRes.data.expenses]
         .sort((a, b) => new Date(b.date) - new Date(a.date))
         .slice(0, 5);
@@ -54,7 +51,6 @@ export default function Dashboard() {
     loadTransactions();
   }, []);
 
-  // Chart data
   const data = {
     labels: ["Income", "Expenses", "Balance"],
     datasets: [
@@ -77,10 +73,8 @@ export default function Dashboard() {
       <div className="flex-1 p-8">
         <Navbar title="Dashboard" />
 
-        {/* TOP SUMMARY CARDS */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
           
-          {/* Total Balance */}
           <div className="bg-white shadow rounded p-6 flex justify-between items-center">
             <div>
               <p className="text-gray-500">Total Balance</p>
@@ -93,7 +87,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Total Income */}
           <div className="bg-white shadow rounded p-6 flex justify-between items-center">
             <div>
               <p className="text-gray-500">Total Income</p>
@@ -106,7 +99,6 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Total Expenses */}
           <div className="bg-white shadow rounded p-6 flex justify-between items-center">
             <div>
               <p className="text-gray-500">Total Expenses</p>
@@ -120,10 +112,8 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* MIDDLE SECTION */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
 
-          {/* RECENT TRANSACTIONS */}
           <div className="lg:col-span-2 bg-white shadow p-6 rounded">
             <h3 className="text-xl font-semibold mb-4">
               Recent Transactions
@@ -160,7 +150,6 @@ export default function Dashboard() {
             </ul>
           </div>
 
-          {/* DONUT CHART */}
           <div className="bg-white shadow p-6 rounded flex flex-col items-center">
             <h3 className="text-xl font-semibold mb-4">Financial Overview</h3>
 

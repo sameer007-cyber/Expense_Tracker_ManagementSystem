@@ -21,9 +21,24 @@ export default function Signup() {
       <div className="w-full max-w-md bg-white p-8 rounded shadow">
         <h2 className="text-2xl font-bold mb-4">Signup</h2>
         <form onSubmit={submit} className="flex flex-col gap-3">
-          <input required placeholder="Username" className="p-2 border" onChange={e=>setForm({...form,username:e.target.value})} />
-          <input required type="email" placeholder="Email" className="p-2 border" onChange={e=>setForm({...form,email:e.target.value})} />
-          <input required type="password" placeholder="Password" className="p-2 border" onChange={e=>setForm({...form,password:e.target.value})} />
+          <input required 
+          placeholder="Username" 
+          className="p-2 border" 
+          onChange={e=>setForm({...form,username:e.target.value})} 
+          />
+
+          <input required 
+          type="email" placeholder="Email" 
+          className="p-2 border" 
+          onChange={e=>setForm({...form,email:e.target.value})} 
+          />
+
+          <input required 
+          type="password" placeholder="Password" 
+          className="p-2 border" 
+          onChange={e=>setForm({...form,password:e.target.value})} 
+          />
+          
           <button className="bg-purple-600 text-white p-2 rounded">Signup</button>
         </form>
         <p className="mt-3">Already have an account? <Link to="/login" className="text-blue-600">Login</Link></p>
