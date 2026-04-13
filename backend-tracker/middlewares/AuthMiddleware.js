@@ -45,4 +45,7 @@ const userVerification = async (req, res) => {
   }
 };
 
-module.exports = { protect };
+module.exports = {
+  protect,
+  userVerification,
+};
