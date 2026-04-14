@@ -1,13 +1,20 @@
-const GEMINI_API_KEY = "AIzaSyDOK2S1RXFGnHO4VvCHVsF01oVZLJND00o";
-const GEMINI_MODEL   = "gemini-2.0-flash-lite";
-const GEMINI_URL     = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+import 'dotenv/config';
+
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_MODEL   = process.env.GEMINI_MODEL || "gemini-2.0-flash-lite";
+
+if (!GEMINI_API_KEY) {
+  throw new Error("Missing GEMINI_API_KEY in .env");
+}
+
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
 
 /**
  * Fetch personalised financial advice from Gemini.
  *
  * @param {{ totalIncome: number, totalExpense: number, remaining: number }} summary
- * @param {{ title: string, amount: number, type: string, date: string }[]} transactions
- * @returns {Promise<string>} Markdown-ish advice string
+ * @param {{ title: string, amount: number, type: string, date: string, category?: string }[]} transactions
+ * @returns {Promise<{ title: string, advice: string }[]>}
  */
 export async function getFinancialAdvice(summary, transactions = []) {
   const savingsRate =
@@ -42,27 +49,42 @@ Based on this data, give 3 short, actionable and specific financial tips (2-3 se
 Format your response as a JSON array of objects with keys: "title" (short tip heading, max 5 words) and "advice" (the tip text).
 Respond ONLY with the JSON array, no markdown fences, no preamble.`;
 
-  const res = await fetch(GEMINI_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 512,
+  try {
+    const res = await fetch(GEMINI_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 512,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `Gemini API error ${res.status}`);
+    }
+
+    const data = await res.json();
+    const raw =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]";
+
+    // Remove accidental markdown formatting
+    const clean = raw.replace(/```json|```/gi, "").trim();
+
+    return JSON.parse(clean);
+  } catch (error) {
+    console.error("Gemini API Error:", error.message);
+
+    // Safe fallback so UI doesn't crash
+    return [
+      {
+        title: "Unable to fetch advice",
+        advice:
+          "We couldn't generate financial tips right now. Please try again later or check your API configuration.",
       },
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `Gemini API error ${res.status}`);
+    ];
   }
-
-  const data = await res.json();
-  const raw  = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "[]";
-
-  // Strip accidental markdown fences
-  const clean = raw.replace(/```json|```/gi, "").trim();
-  return JSON.parse(clean);
 }
