@@ -13,7 +13,10 @@ const app = express();
 
 // middlewares
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: "https://expense-tracker-managementsystem.onrender.com",
+  credentials: true
+}));
 
 // connect database
 connectDB();
