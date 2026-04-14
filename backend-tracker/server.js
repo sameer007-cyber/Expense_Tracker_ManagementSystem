@@ -12,13 +12,14 @@ dotenv.config();
 const app = express();
 
 // middlewares
-app.use(express.json());
 app.use(cors({
   origin: "https://expense-tracker-managementsystem.onrender.com",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 }));
+app.use(express.json());
+
 
 // connect database
 connectDB();
